@@ -62,4 +62,8 @@ Existem bases de dados importantes para cada um dos módulos utilizar durante su
 
 ![base de dados](base de dados.jpg)
 
-9:20
+## Gerente de Armazenamento
+É composto pelo gerente de memória e gerente de dados.  
+Gerente de armazenamento cuida de controlar a memória do sistema e garantir um acesso eficiente aos dados, nenhum dos modulos anteriores fala direto com os dados.  
+
+![gerente de memoria e gerente de dados](memoria e dados.jpg)  
