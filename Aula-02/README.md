@@ -67,3 +67,18 @@ Existem bases de dados importantes para cada um dos módulos utilizar durante su
 Gerente de armazenamento cuida de controlar a memória do sistema e garantir um acesso eficiente aos dados, nenhum dos modulos anteriores fala direto com os dados.  
 
 ![gerente de memoria e gerente de dados](memoria e dados.jpg)  
+
+# Buffer Pool
+Quando você quer fazer acesso a uma base de dados, você ganha um buffer na memória (buffer pool) para ficar com as páginas que são transferidas do disco para a memória.  
+
+Quando você pede informação para o disco, ele te devolve um grupo de informações, pois esse equipamento é lerdo e não vale a pena usa-lo para devolver pouca informação.  
+
+Disco é dividio em blocos/páginas, por isso quando você pede informações ele te devolve um bloco de informações com o tamanho de 2KB/4KB/8KB (normalmente 4KB). Esse grupo de informação é passada do Buffer para o Buffer Pool.  
+
+![buffer pool](buffer pool.jpg)  
+
+# Cache
+
+As memórias cache são apenas caixas de passagem de dados, cada memória cache tem um level (L1/L2/L3) quanto menor mais rápido e quanto mais perto do core melhor.  
+
+![cpu](cpu_old.png)
