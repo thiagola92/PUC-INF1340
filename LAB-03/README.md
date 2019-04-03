@@ -432,7 +432,7 @@ AS $$
 		FROM Mercadorias
 		WHERE CodigoProduto = NumeroMercadoria;
 		
-		SELECT ValorUnitario
+		SELECT FIRST(ValorUnitario)
 		INTO ProdutoValor
 		FROM ItensNota
 		WHERE CodigoProduto = NumeroMercadoria;
