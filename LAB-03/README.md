@@ -128,7 +128,8 @@ CREATE TABLE Cargo(
 
 ```SQL
 ALTER TABLE NotasVenda
-ADD CONSTRAINT cpf_vendedor
+ADD
+	CONSTRAINT cpf_vendedor
 	FOREIGN
 		KEY(CPFVendedor)
 		REFERENCES Funcionario(CPF);
@@ -185,6 +186,25 @@ CREATE TABLE Fornecedor(
 ```
 
 # 2
+
+```SQL
+ALTER TABLE Cliente
+ADD 
+	Cliente 	BOOLEAN DEFAULT TRUE;
+```
+
+```SQL
+ALTER TABLE Cliente
+ADD
+	Fornecedor 	BOOLEAN DEFAULT FALSE;
+```
+
+```SQL
+ALTER TABLE Cliente
+ADD
+	CONSTRAINT cliente_ou_forncedor
+	CHECK (Cliente = TRUE OR FORNECEDOR = TRUE);
+```
 
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
 Utilizando procedure/functions não consigui exibir na tela o resultado da query.  
