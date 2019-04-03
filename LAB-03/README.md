@@ -246,6 +246,13 @@ EXECUTE PROCEDURE EnviarNotificacaoPorEmail();
 # 4
 
 ```SQL
+CREATE VIEW DataQueProdutoFoiComprado AS
+	SELECT NumeroMercadoria, DataCompra
+	FROM ProdutosComprados, NotaFiscalCompra
+	WHERE ProdutosComprados.Numero = NotaFiscalCompra.Numero;
+```
+
+```SQL
 CREATE FUNCTION PrecoDeVendaMin(codigo INTEGER) RETURNS NUMERIC AS $$
 DECLARE
 	valorMin	NUMERIC;
