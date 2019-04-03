@@ -82,6 +82,7 @@ CREATE TABLE Funcionario(
     Cidade              VARCHAR(255),
     Estado              VARCHAR(2),
     CodigoDepartamento  INTEGER,
+    SalarioBase         NUMERIC,	-- NEW
     
     PRIMARY
         KEY(CPF),
@@ -384,6 +385,11 @@ ADD
 
 # 8
 
+```SQL
+ALTER TABLE Funcionario
+ADD COLUMN
+	SalarioBase		NUMERIC;
+```
 
 # 9
 
