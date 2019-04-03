@@ -391,6 +391,17 @@ ADD
 
 ## Cadastro de produtos com todas as suas informações
 
+```SQL
+CREATE PROCEDURE CadastroDeProduto(NumeroMercadoria INTEGER, Descricao VARCHAR, QuantidadeEstoque INTEGER, QuantidadeMin INTEGER, QuantidadeMax INTEGER)
+AS $$
+BEGIN
+	INSERT
+	INTO Mercadorias(NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QuantidadeMax)
+	VALUES (NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QuantidadeMax);
+END;
+$$ LANGUAGE PLPGSQL;
+```
+
 ## Consulta dos N produtos mais vendidos
 
 ## Consulta dos N maiores clientes
