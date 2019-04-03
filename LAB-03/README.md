@@ -209,6 +209,14 @@ CREATE TABLE NotaFiscal(
 DROP TABLE Fornecedor;
 ```
 
+Criar uma visão para obter os fornecedores.  
+
+```SQL
+SELECT CodigoFornecedor
+FROM Cliente, Notafiscalcompra
+WHERE Codigo = Codigofornecedor;
+```
+
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
 Utilizando procedure/functions não consigui exibir na tela o resultado da query.  
 
