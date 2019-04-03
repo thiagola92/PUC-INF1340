@@ -212,7 +212,7 @@ DROP TABLE Fornecedor;
 Criar uma visão para obter os fornecedores.  
 
 ```SQL
-CREATE VIEW CodigoFornecedor
+CREATE VIEW Fornecedor
 AS
 	SELECT Cliente.*
 	FROM Cliente, Notafiscalcompra
