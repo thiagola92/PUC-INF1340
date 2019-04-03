@@ -387,8 +387,6 @@ ADD
 
 # 9
 
-## Consulta de aquisições em atraso de um determinado fornecedor
-
 ## Cadastro de produtos com todas as suas informações
 
 ```SQL
@@ -404,16 +402,10 @@ END;
 $$ LANGUAGE PLPGSQL;
 ```
 
-## Consulta dos N produtos mais vendidos
-
 ## Consulta dos N maiores clientes
-
-## Consulta dos N maiores fornecedores
 
 ## Consulta a dados de um fornecedor/cliente X
 
 ## Consulta a estoque e preço de um produto
 
 ## Consulta a dados de um pedido X
-
-## Consulta a dados de uma Nota Fiscal X
