@@ -148,7 +148,7 @@ CREATE TABLE NotaFiscal(
         KEY(Numero),
     FOREIGN
         KEY(CodigoFornecedor)
-        REFERENCES Fornecedor(Codigo)
+        REFERENCES Cliente(Codigo)
 );
 ```
 
@@ -187,30 +187,8 @@ CREATE TABLE Fornecedor(
 
 # 2
 
-A idéia é utilizar a tabela Cliente para armazenar se a pessoa é cliente ou fornecedor.  
-Para isso foi criado dois booleans, um diz se é cliente e outro diz se é fornecedor.  
-Uma constraint foi adicionada para garantir que seja um ou outro.  
-
-Após isso foi preciso alterar as referências à tabela Fornecedor para Cliente.  
-E deletar a tabela Fornecedor.  
-Como ainda podemos querer descobrir os fornecedores, criar uma Visão Fornecedor.  
-
-```SQL
-ALTER TABLE Cliente
-ADD 
-	Cliente 	BOOLEAN DEFAULT TRUE;
-	
-ALTER TABLE Cliente
-ADD
-	Fornecedor 	BOOLEAN DEFAULT FALSE;
-```
-
-```SQL
-ALTER TABLE Cliente
-ADD
-	CONSTRAINT cliente_ou_forncedor
-	CHECK (Cliente = TRUE OR FORNECEDOR = TRUE);
-```
+Alterar para referênciar a tabela Cliente.  
+Deletar a tabela Fornecedor.  
 
 ```SQL
 DROP TABLE NotaFiscal;
@@ -229,16 +207,6 @@ CREATE TABLE NotaFiscal(
 );
 
 DROP TABLE Fornecedor;
-```
-
-```SQL
-CREATE VIEW Fornecedor
-AS
-	SELECT *
-	FROM Cliente
-	WHERE (
-		Fornecedor = TRUE
-	);
 ```
 
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
