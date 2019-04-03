@@ -226,7 +226,7 @@ Uma função para pegar tudo vendido para a empresa.
 Uma função para pegar tudo comprado da empresa.  
 As funções vão retornar cursor.  
 
-````SQL
+```SQL
 CREATE FUNCTION VendidoParaEmpresa(codigo INTEGER) RETURNS REFCURSOR AS $$
 DECLARE
 	cursorTabela REFCURSOR;
