@@ -281,48 +281,6 @@ END;
 $$ LANGUAGE PLPGSQL;
 ```
 
-
-
-Essa trigger faz:
-Uma query para descobrir a compra mais recente feita com aquela mercadoria.  
-Outra query para descobrir o numero do produto comprado nessa compra mais recente.  
-Ultima query para pegar o valor unitário desse produto.  
-
-
-```SQL
-CREATE OR REPLACE TRIGGER ValorMinDeVenda
-    BEFORE
-        INSERT
-        ON ItensNota
-        FOR EACH ROW
-DECLARE
-    MD      DATE;           -- Maior Data (ultima compra)
-    NdC     INTEGER;        -- Numero da Compra
-    PUC     NUMBER(10,2);   -- Preço Ultima Compra
-BEGIN
-    SELECT MAX(DataCompra)
-        INTO MD
-        FROM NotaFiscal
-        WHERE NumeroMercadoria = :NEW.NumeroMercadoria;
-        
-    SELECT NumeroDaCompra
-        INTO Ndc
-        FROM NotaFiscal
-        WHERE NumeroMercadoria = :NEW.NumeroMercadoria
-        AND DataCompra = MD;
-        
-    SELECT ValorUnitario
-        INTO PUC
-        FROM ItensComprados
-        WHERE NumeroMercadoria = :NEW.NumeroMercadoria
-        AND Numero = Ndc;
-        
-    IF(:NEW.ValorUnitario < PUC) THEN
-        raise_application_error(-20001, 'Vendendo por menos do que comprou');
-    END IF;
-END;
-```
-
 # 5
 
 Foi criada uma constraint para impedir que valores sejam menores que 0.  
