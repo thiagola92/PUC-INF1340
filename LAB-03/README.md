@@ -423,4 +423,21 @@ $$ LANGUAGE PLPGSQL;
 
 ## Consulta a estoque e preço de um produto
 
+```SQL
+CREATE FUNCTION ConsultaEstoquePreco(CodigoProduto INTEGER, OUT ProdutoEstoque INTEGER, OUT ProdutoValor INTEGER)
+AS $$
+	BEGIN
+		SELECT QuantidadeEstoque
+		INTO ProdutoEstoque
+		FROM Mercadorias
+		WHERE CodigoProduto = NumeroMercadoria;
+		
+		SELECT ValorUnitario
+		INTO ProdutoValor
+		FROM ItensNota
+		WHERE CodigoProduto = NumeroMercadoria;
+	END;
+$$ LANGUAGE PLPGSQL;
+```
+
 ## Consulta a dados de um pedido X
