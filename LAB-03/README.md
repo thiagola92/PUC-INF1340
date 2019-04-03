@@ -406,6 +406,21 @@ $$ LANGUAGE PLPGSQL;
 
 ## Consulta a dados de um fornecedor/cliente X
 
+```SQL
+CREATE FUNCTION ConsultaCliente(CodigoCliente INTEGER) RETURNS REFCURSOR
+AS $$
+	DECLARE
+		cursorTabela REFCURSOR;
+	BEGIN
+		OPEN cursorTabela FOR
+		SELECT *
+			FROM Cliente
+			WHERE (Codigo = CodigoCliente);
+		RETURN cursorTabela;
+	END;
+$$ LANGUAGE PLPGSQL;
+```
+
 ## Consulta a estoque e preço de um produto
 
 ## Consulta a dados de um pedido X
