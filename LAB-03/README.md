@@ -386,6 +386,8 @@ ADD
 
 # 8
 
+Armazenar na tabela de Funcionario o salário base e comissao.  
+
 ```SQL
 ALTER TABLE Funcionario
 ADD COLUMN
@@ -397,6 +399,8 @@ ALTER TABLE Funcionario
 ADD COLUMN
 	Comissao		NUMERIC;
 ```
+
+Um gatilho que sempre que inserir em NotasVenda, calcula a comissão do funcionario.  
 
 ```SQL
 CREATE FUNCTION AtualizarComissao() RETURNS TRIGGER
