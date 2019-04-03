@@ -245,12 +245,16 @@ EXECUTE PROCEDURE EnviarNotificacaoPorEmail();
 
 # 4
 
+Uma view para auxiliar conseguir a data de venda de cada produto.  
+
 ```SQL
 CREATE VIEW DataQueProdutoFoiComprado AS
 	SELECT NumeroMercadoria, DataCompra
 	FROM ProdutosComprados, NotaFiscalCompra
 	WHERE ProdutosComprados.Numero = NotaFiscalCompra.Numero;
 ```
+
+Função para obter o menor valor possível para um produto.  
 
 ```SQL
 CREATE FUNCTION PrecoDeVendaMin(codigoProduto INTEGER) RETURNS NUMERIC AS $$
@@ -281,6 +285,8 @@ END;
 $$ LANGUAGE PLPGSQL;
 ```
 
+Uma função para levantar error.  
+
 ```SQL
 CREATE FUNCTION PrecoAbaixoDoPermitido() 
 RETURNS TRIGGER
@@ -291,6 +297,8 @@ AS $$
 	END;
 $$ LANGUAGE PLPGSQL;
 ```
+
+Gatilho para bloquear a inserção de preços abaixos do mínimo.  
 
 ```SQL
 CREATE TRIGGER PrecoDeVendaMenorQueMin
