@@ -404,14 +404,43 @@ $$ LANGUAGE PLPGSQL;
 
 ## Consulta dos N maiores clientes
 
-É preciso calcular o valor total de uma compra
+É preciso calcular o valor total de uma compra.  
 
 ```SQL
-CREATE VIEW ValorTotal
+CREATE VIEW ValorTotalDaCompra
 AS
-	SELECT Numero, SUM(ValorUnitario * Quantidade)
+	SELECT Numero, SUM(ValorUnitario * Quantidade) AS Total
 	FROM ItensNota
 	GROUP BY Numero;
+```
+
+É preciso calcular o valor total de todas as compras dos clientes.  
+
+```SQL
+CREATE VIEW ValorTotalDeTodasComprasDeUmCliente
+AS
+	SELECT CodigoCliente, SUM(Total) AS Total
+	FROM NotasVenda, ValorTotalDaCompra
+	WHERE NotasVenda.Numero = ValorTotalDaCompra.Numero
+	GROUP BY CodigoCliente;
+```
+
+Uma função que retorna um cursor com os N maiores clientes.  
+
+```SQL
+CREATE FUNCTION ConsultaMaioresClientes(quantidade INTEGER) RETURNS REFCURSOR
+AS $$
+	DECLARE
+		cursorTabela REFCURSOR;
+	BEGIN
+		OPEN cursorTabela FOR
+		SELECT *
+			FROM ValorTotalDeTodasComprasDeUmCliente
+			ORDER BY Total ASC
+			LIMIT quantidade;
+		RETURN cursorTabela;
+	END;
+$$ LANGUAGE PLPGSQL;
 ```
 
 ## Consulta a dados de um fornecedor/cliente X
