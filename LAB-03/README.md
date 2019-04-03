@@ -12,6 +12,9 @@ CREATE TABLE NotasVenda(
     
     PRIMARY
         KEY(Numero),
+    FOREIGN				-- NEW
+        KEY(CPFVendedor)		-- NEW
+        REFERENCES Funcionario(CPF),	-- NEW
     FOREIGN
         KEY(CodigoCliente)
         REFERENCES Cliente(Codigo)
@@ -27,6 +30,9 @@ CREATE TABLE ItensNota(
     
     PRIMARY
         KEY(Numero, NumeroMercadoria),
+    FOREIGN				-- NEW
+        KEY(Numero)			-- NEW
+        REFERENCES NotasVenda(Numero),	-- NEW
     FOREIGN
         KEY(NumeroMercadoria)
         REFERENCES Mercadorias(NumeroMercadoria)
@@ -38,6 +44,8 @@ CREATE TABLE Mercadorias(
     NumeroMercadoria        INTEGER,
     Descricao               VARCHAR(255),
     QuantidadeEstoque       INTEGER,
+    QuantidadeMin           INTEGER,		-- NEW
+    QuantidadeMax           INTEGER,		-- NEW
     
     PRIMARY
         KEY(NumeroMercadoria)
@@ -365,395 +373,34 @@ EXECUTE PROCEDURE QuantidadeAcimaDoPermitido();
 
 # 7
 
-Foi criado uma trigger para verificar se o cpf do vendedor existe, isso é feito apenas na hora da venda.  
-
 ```SQL
-CREATE OR REPLACE TRIGGER IntegridadeCPF
-    BEFORE
-        INSERT
-        ON NotasVenda
-        FOR EACH ROW
-DECLARE
-    CPFtemp      VARCHAR(50);
-BEGIN
-    SELECT CPF
-        INTO CPFtemp
-        FROM Funcionario
-        WHERE CPF = :NEW.CPFVendedor;
-        
-    IF (CPFtemp IS NULL) THEN
-        raise_application_error(-20003, 'CPF não existe');
-    END IF;
-END;
+ALTER TABLE NotasVenda
+ADD
+	CONSTRAINT cpfVendedorLigadoAoFuncionario
+	FOREIGN
+		KEY(CPFVendedor)
+		REFERENCES Funcionario(CPF);
 ```
 
 # 8
 
-Da query mais externa para a mais interna:  
-Seleciona apenas os funcionarios que estão na tabela funcionario (já que vendas antigas podem ter funcionarios demitidos queremos apenas os que estão trabalhando atualmente).  
-Query para obter o cargo de cada funcionario.  
-Query para obter o salario base de cada funcionário.  
-Query para descobrir quanto dinheiro foi feito com a venda de um certo item (valor unitário * quantidade).  
-Query para somar o total de todas essas vendas de items.  
-Query para descobrir o salário final (salário + comissão).  
-
-```SQL
-SELECT (SalarioBase + Comissao*0.05) AS Salario, Nome
-    FROM (
-    SELECT SUM(ValorTotal) AS Comissao, SalarioBase, Nome
-        FROM (
-        SELECT (ValorUnitario * Quantidade) AS ValorTotal, SalarioBase, Nome
-            FROM (
-            SELECT Numero AS N, CPF, SalarioBase, Nome
-                FROM (
-                SELECT Numero, CPF, CodigoCargo, Nome 
-                    FROM (
-                    SELECT NotasVenda.Numero, CPF AS C, Nome
-                        FROM NotasVenda, Funcionario
-                        WHERE CPFVendedor = CPF
-                    ), CargosFunc
-                    WHERE C = CPF
-                ), Cargo
-                WHERE CodigoCargo = Codigo
-            ), ItensNota
-            WHERE N = Numero
-        )
-        GROUP BY (Nome, SalarioBase)
-    );
-```
 
 # 9
 
 ## Consulta de aquisições em atraso de um determinado fornecedor
 
-Precisamos de uma data de previsão então foi adicionado a tabela.  
-
-```SQL
-ALTER TABLE NotaFiscal
-    ADD DataPrevisao DATE;
-```
-
-Foi feito uma query para justamente exibir todos os items que estão atrasados.
-
-```SQL
-SELECT NotaFiscal.Numero, DataCompra
-    FROM (
-    SELECT Codigo
-        FROM Fornecedor
-        WHERE Codigo = 1    -- Trocar pelo id do fornecedor
-    ), NotaFiscal
-    WHERE CodigoFornecedor = Codigo
-    AND CURRENT_DATE > DataPrevisao;
-```
-
 ## Cadastro de produtos com todas as suas informações
-
-```SQL
-CREATE OR REPLACE PROCEDURE inserirMercadoria(Numero INTEGER, Des VARCHAR, Qtd INTEGER, QtdMax INTEGER)
-AS
-BEGIN
-    INSERT
-        INTO Mercadorias
-        (NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMaxEstoque)
-        VALUES
-        (Numero, Des, Qtd, QtdMax);
-END;
-```
 
 ## Consulta dos N produtos mais vendidos
 
-Lógica
-```SQL
--- Deixando apenas as colunas que importam
-SELECT NumeroMercadoria, Quantidade
-    FROM ItensNota;
-    
--- Fazendo o somatório das linhas
-SELECT NumeroMercadoria, SUM(Quantidade)
-    FROM (
-    SELECT NumeroMercadoria, Quantidade
-        FROM ItensNota
-    )
-    GROUP BY NumeroMercadoria;
-    
--- Renomeando para poder organizar por aquela coluna
-SELECT NumeroMercadoria, SUM(Quantidade) AS Quantidade
-    FROM (
-    SELECT NumeroMercadoria, Quantidade
-        FROM ItensNota
-    )
-    GROUP BY NumeroMercadoria
-    ORDER BY Quantidade DESC;
-    
--- Renomeando para poder organizar por aquela coluna
-SELECT NumeroMercadoria, SUM(Quantidade) AS Quantidade
-    FROM (
-    SELECT NumeroMercadoria, Quantidade
-        FROM ItensNota
-    )
-    GROUP BY NumeroMercadoria
-    ORDER BY Quantidade DESC; 
-    
--- Limitando a quantidade de linhas que aparece
-SELECT *
-    FROM (
-    SELECT NumeroMercadoria, SUM(Quantidade) AS Quantidade
-        FROM (
-        SELECT NumeroMercadoria, Quantidade
-            FROM ItensNota
-        )
-        GROUP BY NumeroMercadoria
-        ORDER BY Quantidade DESC
-    )
-    WHERE ROWNUM <= 2;
-```
-
-```SQL
-SELECT *
-    FROM (
-    SELECT NumeroMercadoria, SUM(Quantidade) AS Quantidade
-        FROM (
-        SELECT NumeroMercadoria, Quantidade
-            FROM ItensNota
-        )
-        GROUP BY NumeroMercadoria
-        ORDER BY Quantidade DESC
-    )
-    WHERE ROWNUM <= 2;
-```
-
 ## Consulta dos N maiores clientes
-
-```SQL
-SELECT ROWNUM, Nome, Gasto
-    FROM (
-    SELECT Nome, Gasto
-        FROM (
-        SELECT CodigoCliente, Gasto
-            FROM (
-            SELECT Numero AS N, SUM(Quantidade * ValorUnitario) AS Gasto
-                FROM ItensNota
-                GROUP BY Numero
-            ), NotasVenda
-            WHERE N = Numero
-        ), Cliente
-        WHERE CodigoCliente = Codigo
-        ORDER BY Gasto DESC
-    )
-    WHERE ROWNUM <= 3;
-```
 
 ## Consulta dos N maiores fornecedores
 
-```SQL
-SELECT ROWNUM, Nome, Gasto
-    FROM (
-    SELECT Nome, Gasto
-        FROM (
-        SELECT CodigoFornecedor, SUM(Gasto) AS Gasto
-            FROM (
-            SELECT Numero AS N, SUM(ValorTotal) AS Gasto
-                FROM ItensComprados
-                GROUP BY Numero
-            ), NotaFiscal
-            WHERE N = NumeroDaCompra
-            GROUP BY CodigoFornecedor
-        ), Fornecedor
-        WHERE CodigoFornecedor = Codigo
-        ORDER BY Gasto DESC
-    )
-    WHERE ROWNUM <= 3;
-```
-
 ## Consulta a dados de um fornecedor/cliente X
-
-```SQL
-CREATE OR REPLACE FUNCTION informacaoCliente(Cod INTEGER)
-    RETURN VARCHAR
-AS
-    Nome                VARCHAR(255);
-    Telefone            VARCHAR(255);
-    Logradouro          VARCHAR(255);
-    Numero              INTEGER;
-    Complemento         VARCHAR(255);
-    Cidade              VARCHAR(255);
-    Estado              VARCHAR(2);
-    NumeroContribuinte  INTEGER;
-BEGIN
-
-    SELECT Nome, Telefone, Logradouro, Numero, Complemento, Cidade, Estado, NumeroContribuinte
-        INTO Nome, Telefone, Logradouro, Numero, Complemento, Cidade, Estado, NumeroContribuinte
-        FROM Cliente
-        WHERE Codigo = Cod;
-    
-    RETURN Nome || ' ' || Telefone || ' ' || Logradouro || ' ' || Numero || ' ' || Complemento || ' ' || Cidade || ' ' || Estado || ' ' || NumeroContribuinte;
-END;
-```
-
-```SQL
-CREATE OR REPLACE FUNCTION informacaoFornecedor(Cod INTEGER)
-    RETURN VARCHAR
-AS
-    Nome                VARCHAR(255);
-    Telefone            VARCHAR(255);
-    Logradouro          VARCHAR(255);
-    Numero              INTEGER;
-    Complemento         VARCHAR(255);
-    Cidade              VARCHAR(255);
-    Estado              VARCHAR(2);
-    NumeroContribuinte  INTEGER;
-BEGIN
-
-    SELECT Nome, Telefone, Logradouro, Numero, Complemento, Cidade, Estado, NumeroContribuinte
-        INTO Nome, Telefone, Logradouro, Numero, Complemento, Cidade, Estado, NumeroContribuinte
-        FROM Fornecedor
-        WHERE Codigo = Cod;
-    
-    RETURN Nome || ' ' || Telefone || ' ' || Logradouro || ' ' || Numero || ' ' || Complemento || ' ' || Cidade || ' ' || Estado || ' ' || NumeroContribuinte;
-END;
-```
-
-Para testar basta usar
-
-```SQL
-BEGIN
-    DBMS_OUTPUT.PUT_LINE(informacaoCliente(1));
-    DBMS_OUTPUT.PUT_LINE(informacaoFornecedor(1));
-END;
-```
 
 ## Consulta a estoque e preço de um produto
 
-Query para saber quantos produtos tem no estoque.  
-Query para saber por quanto foi vendido o produto da ultima vez.  
-
-```SQL
-CREATE OR REPLACE FUNCTION consultaEstoquePreco(NM INTEGER)
-RETURN VARCHAR
-AS
-    QT  INTEGER;
-    VU  INTEGER;
-BEGIN
-    SELECT QuantidadeEstoque
-        INTO QT
-        FROM Mercadorias
-        WHERE NumeroMercadoria = NM;
-        
-    SELECT ValorUnitario
-        INTO VU
-        FROM (
-        SELECT MAX(Numero) AS N
-            FROM ItensNota
-            WHERE NumeroMercadoria = NM
-        ), ItensNota
-        WHERE Numero = N;
-        
-    RETURN QT || ' ' || VU;
-END;
-```
-
-```SQL
-BEGIN
-    DBMS_OUTPUT.PUT_LINE(consultaEstoquePreco(1));
-END;
-```
-
 ## Consulta a dados de um pedido X
 
-```SQL
-CREATE OR REPLACE FUNCTION consultaPedido(pedido INTEGER)
-RETURN VARCHAR
-AS
-    Nome                VARCHAR(255);
-    Descricao           VARCHAR(255);
-    Quantidade          INTEGER;
-    ValorUnitario       NUMBER(10,2);
-    ValorTotal          NUMBER;
-    DataCompra          DATE;
-BEGIN
-
-    SELECT DataCompra
-        INTO DataCompra
-        FROM NotaFiscal
-        WHERE pedido = Numero;
-        
-    SELECT Quantidade, ValorUnitario, ValorTotal
-        INTO Quantidade, ValorUnitario, ValorTotal
-        FROM (
-        SELECT NumeroDaCompra AS N
-            FROM NotaFiscal
-            WHERE pedido = Numero
-        ), ItensComprados
-        WHERE Numero = N;
-    
-    SELECT Nome
-        INTO Nome
-        FROM (
-        SELECT CodigoFornecedor AS CF
-            FROM NotaFiscal
-            WHERE pedido = Numero
-        ), Fornecedor
-        WHERE Fornecedor.Codigo = CF;
-        
-    SELECT Descricao
-        INTO Descricao
-        FROM (
-        SELECT NumeroMercadoria AS NM
-            FROM NotaFiscal
-            WHERE pedido = Numero
-        ), Mercadorias
-        WHERE Mercadorias.NumeroMercadoria = NM;
-        
-    RETURN Descricao || ' ' || Quantidade || '' || ValorUnitario || '' || ValorTotal || '' || DataCompra || '' || Nome;
-END;
-```
-
 ## Consulta a dados de uma Nota Fiscal X
-
-```SQL
-CREATE OR REPLACE FUNCTION consultaNotaFiscal(pedido INTEGER)
-RETURN VARCHAR
-AS
-    Nome                VARCHAR(255);
-    Descricao           VARCHAR(255);
-    Quantidade          INTEGER;
-    ValorUnitario       NUMBER(10,2);
-    ValorTotal          NUMBER;
-    DataCompra          DATE;
-BEGIN
-
-    SELECT DataCompra
-        INTO DataCompra
-        FROM NotaFiscal
-        WHERE pedido = Numero;
-        
-    SELECT Quantidade, ValorUnitario, ValorTotal
-        INTO Quantidade, ValorUnitario, ValorTotal
-        FROM (
-        SELECT NumeroDaCompra AS N
-            FROM NotaFiscal
-            WHERE pedido = Numero
-        ), ItensComprados
-        WHERE Numero = N;
-    
-    SELECT Nome
-        INTO Nome
-        FROM (
-        SELECT CodigoFornecedor AS CF
-            FROM NotaFiscal
-            WHERE pedido = Numero
-        ), Fornecedor
-        WHERE Fornecedor.Codigo = CF;
-        
-    SELECT Descricao
-        INTO Descricao
-        FROM (
-        SELECT NumeroMercadoria AS NM
-            FROM NotaFiscal
-            WHERE pedido = Numero
-        ), Mercadorias
-        WHERE Mercadorias.NumeroMercadoria = NM;
-        
-    RETURN Descricao || ' ' || Quantidade || '' || ValorUnitario || '' || ValorTotal || '' || DataCompra || '' || Nome;
-END;
-```
