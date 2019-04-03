@@ -143,7 +143,6 @@ ADD
 ```SQL
 CREATE TABLE NotaFiscalCompra(
     Numero                  INTEGER,
-    NumeroDaCompra          INTEGER,
     DataCompra              DATE,
     CodigoFornecedor        INTEGER,
     
@@ -165,6 +164,9 @@ CREATE TABLE ProdutosComprados(
     
     PRIMARY
         KEY(Numero, NumeroMercadoria),
+    FOREIGN
+        KEY(Numero)
+        REFERENCES NotaFiscalCompra(Numero),
     FOREIGN
         KEY(NumeroMercadoria)
         REFERENCES Mercadorias(NumeroMercadoria)
