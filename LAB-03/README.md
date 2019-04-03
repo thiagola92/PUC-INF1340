@@ -398,6 +398,38 @@ ADD COLUMN
 	Comissao		NUMERIC;
 ```
 
+```SQL
+CREATE FUNCTION AtualizarComissao() RETURNS TRIGGER
+AS $$
+DECLARE
+	valorTotal		NUMERIC;
+	comissaoAtual	NUMERIC;
+BEGIN
+	SELECT Total
+	INTO valorTotal
+	FROM ValorTotalDaCompra
+	WHERE NEW.Numero = Numero;
+	
+	SELECT Comissao
+	INTO comissaoAtual
+	FROM Funcionario
+	WHERE NEW.CPFVendedor = CPF;
+	
+	UPDATE Funcionario
+	SET Comissao = (comissaoAtual + valorTotal * 5/100)
+	WHERE NEW.CPFVendedor = CPF;
+END;
+$$ LANGUAGE PLPGSQL;
+	
+
+CREATE TRIGGER AdicionarComissao
+AFTER
+	INSERT
+	ON NotasVenda
+	FOR EACH ROW
+EXECUTE PROCEDURE AtualizarComissao();
+```
+
 # 9
 
 ## Cadastro de produtos com todas as suas informações
