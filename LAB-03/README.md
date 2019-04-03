@@ -135,7 +135,7 @@ ADD
 		REFERENCES Funcionario(CPF);
 ```
 
-````SQL
+```SQL
 ALTER TABLE ItensNota
 ADD
 	CONSTRAINT ItemVendidoLigadoNotaVenda
