@@ -43,9 +43,9 @@ CREATE TABLE ItensNota(
 CREATE TABLE Mercadorias(
     NumeroMercadoria        INTEGER,
     Descricao               VARCHAR(255),
-    QuantidadeEstoque       INTEGER,
-    QuantidadeMin           INTEGER,		-- NEW
-    QuantidadeMax           INTEGER,		-- NEW
+    QuantidadeEstoque       INTEGER	CHECK(QuantidadeEstoque >= 0),  -- NEW CONSTRAINT
+    QuantidadeMin           INTEGER,					-- NEW
+    QuantidadeMax           INTEGER,					-- NEW
     
     PRIMARY
         KEY(NumeroMercadoria)
