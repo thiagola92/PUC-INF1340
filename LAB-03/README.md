@@ -138,7 +138,7 @@ ADD
 # 1
 
 ```SQL
-CREATE TABLE NotaFiscal(
+CREATE TABLE NotaFiscalCompra(
     Numero                  INTEGER,
     NumeroDaCompra          INTEGER,
     DataCompra              DATE,
