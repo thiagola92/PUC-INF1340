@@ -206,6 +206,23 @@ ADD
 	CHECK (Cliente = TRUE OR FORNECEDOR = TRUE);
 ```
 
+```SQL
+DROP TABLE NotaFiscal;
+
+CREATE TABLE NotaFiscal(
+    Numero                  INTEGER,
+    NumeroDaCompra          INTEGER,
+    DataCompra              DATE,
+    CodigoFornecedor        INTEGER,
+    
+    PRIMARY
+        KEY(Numero),
+    FOREIGN
+        KEY(CodigoFornecedor)
+        REFERENCES Cliente(Codigo)
+);
+```
+
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
 Utilizando procedure/functions não consigui exibir na tela o resultado da query.  
 
