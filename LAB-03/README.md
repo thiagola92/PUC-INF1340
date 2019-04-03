@@ -2,8 +2,6 @@
 
 ## Bases de dados do sistema de vendas
 
-Foi adicionadoo FOREIGN KEY(CPFVendedor) REFERENCES Cliente(CPF)  
-
 ```SQL
 CREATE TABLE NotasVenda(
     Numero          INTEGER,
@@ -16,10 +14,7 @@ CREATE TABLE NotasVenda(
         KEY(Numero),
     FOREIGN
         KEY(CodigoCliente)
-        REFERENCES Cliente(Codigo),
-    FOREIGN
-        KEY(CPFVendedor)
-        REFERENCES Cliente(CPF)
+        REFERENCES Cliente(Codigo)
 );
 ```
 
@@ -41,16 +36,11 @@ CREATE TABLE ItensNota(
 );
 ```
 
-Foi adicionado QuantidadeMin INTEGER  
-Foi adicionado QuantidadeMax INTEGER  
-
 ```SQL
 CREATE TABLE Mercadorias(
     NumeroMercadoria        INTEGER,
     Descricao               VARCHAR(255),
     QuantidadeEstoque       INTEGER,
-    QuantidadeMin           INTEGER,
-    QuantidadeMax           INTEGER,
     
     PRIMARY
         KEY(NumeroMercadoria)
@@ -321,6 +311,21 @@ EXECUTE PROCEDURE PrecoAbaixoDoPermitido();
 ```
 
 # 5
+
+````SQL
+ALTER TABLE Mercadorias
+ADD COLUMN
+	QuantidadeMin		INTEGER;
+```
+
+````SQL
+ALTER TABLE Mercadorias
+ADD COLUMN
+	QuantidadeMax		INTEGER;
+```
+
+----
+
 
 Foi criada uma constraint para impedir que valores sejam menores que 0.  
 
