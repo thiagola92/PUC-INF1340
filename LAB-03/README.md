@@ -254,41 +254,6 @@ END;
 $$ LANGUAGE PLPGSQL;
 ```
 
-Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
-Utilizando procedure/functions não consigui exibir na tela o resultado da query.  
-
-Essa query é a união de duas queries, uma que vai pegar os produtos comprados do ponto de vista de cliente e outra que vai olhar os produtos comprados do ponto de vista de fornecedor.  
-
-```SQL
-SELECT NumeroMercadoria, Descricao
-    FROM (
-    SELECT NumeroMercadoria AS MN
-        FROM (
-        SELECT Numero AS N
-            FROM (
-            SELECT Codigo
-                FROM Cliente
-                WHERE Cliente.Nome = 'Thiago' -- Nome do cliente/fornecedor
-            ), NotasVenda
-            WHERE CodigoCliente = Codigo
-        ), ItensNota
-        WHERE Numero = N
-    ), Mercadorias
-    WHERE NumeroMercadoria = MN
-    UNION ALL
-SELECT NumeroMercadoria, Descricao
-    FROM (
-    SELECT NumeroMercadoria AS MN
-        FROM (
-        SELECT Codigo
-            FROM Fornecedor
-            WHERE Nome = 'Thiago' -- Nome do cliente/fornecedor
-        ), NotaFiscal
-        WHERE CodigoFornecedor = Codigo
-    ), Mercadorias
-    WHERE NumeroMercadoria = MN;
-```
-
 # 3
 
 Foi criado uma trigger que levanta um error quando o estoque está abaixo de 3.  
