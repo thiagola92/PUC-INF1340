@@ -219,6 +219,38 @@ AS
 	WHERE Codigo = Codigofornecedor;
 ```
 
+Uma função para pegar tudo vendido para a empresa.  
+Uma função para pegar tudo comprado da empresa.  
+As funções vão retornar cursor.  
+
+````SQL
+CREATE FUNCTION VendidoParaEmpresa(codigo INTEGER) RETURNS REFCURSOR AS $$
+DECLARE
+	cursorTabela REFCURSOR;
+BEGIN
+	OPEN cursorTabela FOR
+	SELECT *
+		FROM NotasVenda
+		WHERE (codigo = CodigoCliente);
+	RETURN cursorTabela;
+END;
+$$ LANGUAGE PLPGSQL;
+```
+
+```SQL
+CREATE FUNCTION CompradoDaEmpresa(codigo INTEGER) RETURNS REFCURSOR AS $$
+DECLARE
+	cursorTabela REFCURSOR;
+BEGIN
+	OPEN cursorTabela FOR
+	SELECT *
+		FROM NotaFiscalCompra
+		WHERE (codigo = CodigoFornecedor);
+	RETURN cursorTabela;
+END;
+$$ LANGUAGE PLPGSQL;
+```
+
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
 Utilizando procedure/functions não consigui exibir na tela o resultado da query.  
 
