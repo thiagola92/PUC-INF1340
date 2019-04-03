@@ -152,12 +152,12 @@ CREATE TABLE NotaFiscal(
 ```
 
 ```SQL
-CREATE TABLE ItensComprados(
+CREATE TABLE ProdutosComprados(
     Numero              INTEGER,
     NumeroMercadoria    INTEGER,
     Quantidade          INTEGER,
-    ValorUnitario       NUMBER(10,2),
-    ValorTotal          NUMBER,
+    ValorUnitario       NUMERIC(10,2),
+    ValorTotal          NUMERIC,
     
     PRIMARY
         KEY(Numero, NumeroMercadoria),
