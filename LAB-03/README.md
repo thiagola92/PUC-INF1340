@@ -245,6 +245,21 @@ EXECUTE PROCEDURE EnviarNotificacaoPorEmail();
 
 # 4
 
+```SQL
+CREATE FUNCTION PrecoDeVendaMin(codigo INTEGER) RETURNS NUMERIC AS $$
+DECLARE
+	valorMin	NUMERIC;
+BEGIN
+	SELECT MAX(DataCompra)
+		INTO valorMin
+		FROM NotaFiscalCompra;
+	RETURN valorMin;
+END;
+$$ LANGUAGE PLPGSQL;
+```
+
+
+
 Essa trigger faz:
 Uma query para descobrir a compra mais recente feita com aquela mercadoria.  
 Outra query para descobrir o numero do produto comprado nessa compra mais recente.  
