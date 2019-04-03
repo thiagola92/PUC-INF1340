@@ -28,6 +28,9 @@ CREATE TABLE ItensNota(
     PRIMARY
         KEY(Numero, NumeroMercadoria),
     FOREIGN
+        KEY(Numero)
+        REFERENCES NotasVenda(Numero),
+    FOREIGN
         KEY(NumeroMercadoria)
         REFERENCES Mercadorias(NumeroMercadoria)
 );
