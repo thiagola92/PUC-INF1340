@@ -227,7 +227,7 @@ $$ LANGUAGE PLPGSQL;
 
 Cade Mercadoria tem um mínimo
 
-````SQL
+```SQL
 ALTER TABLE Mercadorias
 ADD COLUMN
 	QuantidadeMin		INTEGER;
