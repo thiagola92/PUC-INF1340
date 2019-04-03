@@ -2,6 +2,8 @@
 
 ## Bases de dados do sistema de vendas
 
+Foi adicionadoo FOREIGN KEY(CPFVendedor) REFERENCES Cliente(CPF)  
+
 ```SQL
 CREATE TABLE NotasVenda(
     Numero          INTEGER,
@@ -14,7 +16,10 @@ CREATE TABLE NotasVenda(
         KEY(Numero),
     FOREIGN
         KEY(CodigoCliente)
-        REFERENCES Cliente(Codigo)
+        REFERENCES Cliente(Codigo),
+    FOREIGN
+        KEY(CPFVendedor)
+        REFERENCES Cliente(CPF)
 );
 ```
 
