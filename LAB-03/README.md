@@ -36,11 +36,17 @@ CREATE TABLE ItensNota(
 );
 ```
 
+Foi adicionado:  
+* QuantidadeMin           INTEGER,  
+* QuantidadeMax           INTEGER,  
+
 ```SQL
 CREATE TABLE Mercadorias(
     NumeroMercadoria        INTEGER,
     Descricao               VARCHAR(255),
     QuantidadeEstoque       INTEGER,
+    QuantidadeMin           INTEGER,
+    QuantidadeMax           INTEGER,
     
     PRIMARY
         KEY(NumeroMercadoria)
