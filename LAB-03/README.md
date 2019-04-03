@@ -173,48 +173,7 @@ CREATE TABLE ProdutosComprados(
 );
 ```
 
-```SQL
-CREATE TABLE Fornecedor(
-    Codigo              INTEGER,
-    Nome                VARCHAR(255),
-    Telefone            VARCHAR(255),
-    Logradouro          VARCHAR(255),
-    Numero              INTEGER,
-    Complemento         VARCHAR(255),
-    Cidade              VARCHAR(255),
-    Estado              VARCHAR(2),
-    NumeroContribuinte  INTEGER,
-    
-    PRIMARY
-        KEY(Codigo)
-);
-```
-
-# 2
-
-Alterar para referênciar a tabela Cliente.  
-Deletar a tabela Fornecedor.  
-
-```SQL
-DROP TABLE NotaFiscal;
-
-CREATE TABLE NotaFiscal(
-    Numero                  INTEGER,
-    NumeroDaCompra          INTEGER,
-    DataCompra              DATE,
-    CodigoFornecedor        INTEGER,
-    
-    PRIMARY
-        KEY(Numero),
-    FOREIGN
-        KEY(CodigoFornecedor)
-        REFERENCES Cliente(Codigo)
-);
-
-DROP TABLE Fornecedor;
-```
-
-Criar uma visão para obter os fornecedores.  
+Tabela Cliente vai ser usada para armazenar também os Fornecedores.  
 
 ```SQL
 CREATE VIEW Fornecedor
@@ -223,6 +182,8 @@ AS
 	FROM Cliente, Notafiscalcompra
 	WHERE Codigo = Codigofornecedor;
 ```
+
+# 2
 
 Uma função para pegar tudo vendido para a empresa.  
 Uma função para pegar tudo comprado da empresa.  
