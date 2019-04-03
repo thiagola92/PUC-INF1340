@@ -256,19 +256,28 @@ $$ LANGUAGE PLPGSQL;
 
 # 3
 
-Foi criado uma trigger que levanta um error quando o estoque está abaixo de 3.  
+Placeholder.
 
 ```SQL
-CREATE OR REPLACE TRIGGER AlteracaoEstoque
-    BEFORE
-        UPDATE
-        ON Mercadorias
-        FOR EACH ROW
-BEGIN
-    IF(:NEW.QuantidadeEstoque <= 3) THEN
-        raise_application_error(-20000, 'Estoque baixo, enviando e-mail');
-    END IF;
-END;
+CREATE FUNCTION EnviarNotificacaoPorEmail() 
+RETURNS TRIGGER
+AS $$
+	BEGIN
+	RETURN NULL;
+	END;
+$$ LANGUAGE PLPGSQL;
+```
+
+Gatilho para avisar se descer abaixo do mínimo.
+
+```SQL
+CREATE TRIGGER ProdutoQuantidadeAbaixoDoMinimo
+AFTER
+	UPDATE
+	ON Mercadorias
+	FOR EACH ROW
+	WHEN (NEW.QuantidadeEstoque <= 3)
+EXECUTE PROCEDURE EnviarNotificacaoPorEmail();
 ```
 
 # 4
