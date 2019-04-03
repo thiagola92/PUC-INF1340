@@ -193,6 +193,7 @@ Uma constraint foi adicionada para garantir que seja um ou outro.
 
 Após isso foi preciso alterar as referências à tabela Fornecedor para Cliente.  
 E deletar a tabela Fornecedor.  
+Como ainda podemos querer descobrir os fornecedores, criar uma Visão Fornecedor.  
 
 ```SQL
 ALTER TABLE Cliente
@@ -228,6 +229,16 @@ CREATE TABLE NotaFiscal(
 );
 
 DROP TABLE Fornecedor;
+```
+
+```SQL
+CREATE VIEW Fornecedor
+AS
+	SELECT *
+	FROM Cliente
+	WHERE (
+		Fornecedor = TRUE
+	);
 ```
 
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
