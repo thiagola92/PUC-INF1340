@@ -136,8 +136,6 @@ ADD CONSTRAINT cpf_vendedor
 
 # 1
 
-## Base de dados do sistema de compras
-
 ```SQL
 CREATE TABLE NotaFiscal(
     Numero                  INTEGER,
