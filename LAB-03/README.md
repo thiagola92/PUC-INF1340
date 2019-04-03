@@ -127,10 +127,6 @@ CREATE TABLE Cargo(
 # 1
 
 ## Base de dados do sistema de compras
-Eu separei em 3 tabelas  
-**NotaFiscal** - Armazena todas as informações de uma nota fiscal indiretamente, utiliza as outras 2 tabelas para conseguir essa informação.  
-**ItensComprados** - Armazena todas as informações dos itens comprados, a idéia é funcionar igual a tabela já existente ItensNota.  
-**Fornecedor** - Armazena todas as informações dos fornecedores, a idéia é funcionar igual a tabela já existente Cliente.  
 
 ```SQL
 CREATE TABLE NotaFiscal(
