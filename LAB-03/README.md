@@ -404,6 +404,16 @@ $$ LANGUAGE PLPGSQL;
 
 ## Consulta dos N maiores clientes
 
+É preciso calcular o valor total de uma compra
+
+```SQL
+CREATE VIEW ValorTotal
+AS
+	SELECT Numero, SUM(ValorUnitario * Quantidade)
+	FROM ItensNota
+	GROUP BY Numero;
+```
+
 ## Consulta a dados de um fornecedor/cliente X
 
 ```SQL
