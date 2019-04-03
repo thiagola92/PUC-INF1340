@@ -117,7 +117,7 @@ CREATE TABLE Departamento(
 CREATE TABLE Cargo(
     Codigo      INTEGER,
     Descricao   VARCHAR(255),
-    SalarioBase NUMBER(15,2),
+    SalarioBase NUMERIC(15,2),
     
     PRIMARY
         KEY(Codigo)
