@@ -187,6 +187,8 @@ CREATE TABLE Fornecedor(
 
 # 2
 
+Tabela Cliente vai armazenar 2 booleans, um diz se é cliente e outro diz se é fornecedor.  
+
 ```SQL
 ALTER TABLE Cliente
 ADD 
@@ -199,12 +201,16 @@ ADD
 	Fornecedor 	BOOLEAN DEFAULT FALSE;
 ```
 
+Tabela exige que você seja cliente ou fornecedor.  
+
 ```SQL
 ALTER TABLE Cliente
 ADD
 	CONSTRAINT cliente_ou_forncedor
 	CHECK (Cliente = TRUE OR FORNECEDOR = TRUE);
 ```
+
+Deixando de referênciar a tabela Fornecedor e agora referênciando a tabela Cliente.  
 
 ```SQL
 DROP TABLE NotaFiscal;
@@ -221,6 +227,10 @@ CREATE TABLE NotaFiscal(
         KEY(CodigoFornecedor)
         REFERENCES Cliente(Codigo)
 );
+```
+
+```SQL
+DROP TABLE Fornecedor;
 ```
 
 Como a idéia era identificar todos os produtos comprados ou fornecidos por um cliente/forncedor, eu queria exibir no final uma tabela com os produtos comprados pelo cliente/fornecedor.  
