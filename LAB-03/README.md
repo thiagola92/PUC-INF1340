@@ -342,42 +342,25 @@ ADD COLUMN
 	QuantidadeMax		INTEGER;
 ```
 
----
-
-Eu não queria ter que alterear as tabelas originais mas nesse caso eu precisava saber a quantidade máxima que um estoque conseguia armazenar.   
-
 ```SQL
-ALTER TABLE Mercadorias
-    ADD QuantidadeMaxEstoque INTEGER;
+CREATE FUNCTION QuantidadeAcimaDoPermitido()
+RETURNS TRIGGER
+AS $$
+	BEGIN
+	RAISE EXCEPTION 'Quantidade acima do permitido';
+	RETURN NULL;
+	END;
+$$ LANGUAGE PLPGSQL;
 ```
 
-Faz duas queries, uma para obter a quantidade de itens no estoque agora e outra para descobrir o máximo.  
-Gera um error case ultrapasse.  
-
 ```SQL
-CREATE OR REPLACE TRIGGER LimiteEstoque
-    BEFORE
-        INSERT
-        ON ItensComprados
-        FOR EACH ROW
-DECLARE
-    QE      INTEGER;    -- Quantidade Estoque
-    QME     INTEGER;    -- Quantidade Máximo Estoque
-BEGIN
-    SELECT QuantidadeEstoque
-        INTO QE
-        FROM Mercadorias
-        WHERE NumeroMercadoria = :NEW.NumeroMercadoria;
-
-    SELECT QuantidadeMaxEstoque
-        INTO QME
-        FROM Mercadorias
-        WHERE NumeroMercadoria = :NEW.NumeroMercadoria;
-    
-    IF(:NEW.Quantidade + QE > QME) THEN
-        raise_application_error(-20002, 'Ultrapassou o limite do estoque');
-    END IF;
-END;
+CREATE TRIGGER QuantidadeDeProdutosAcimaDoMax
+BEFORE
+	INSERT
+	ON Mercadorias
+	FOR EACH ROW
+	WHEN (NEW.QuantidadeEstoque > NEW.QuantidadeMax)
+EXECUTE PROCEDURE QuantidadeAcimaDoPermitido();
 ```
 
 # 7
