@@ -138,9 +138,6 @@ CREATE TABLE NotaFiscal(
     PRIMARY
         KEY(Numero),
     FOREIGN
-        KEY(NumeroDaCompra)
-        REFERENCES ProdutosComprados(Numero),
-    FOREIGN
         KEY(CodigoFornecedor)
         REFERENCES Fornecedor(Codigo)
 );
