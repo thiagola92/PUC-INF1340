@@ -28,9 +28,6 @@ CREATE TABLE ItensNota(
     PRIMARY
         KEY(Numero, NumeroMercadoria),
     FOREIGN
-        KEY(Numero)
-        REFERENCES NotasVenda(Numero),
-    FOREIGN
         KEY(NumeroMercadoria)
         REFERENCES Mercadorias(NumeroMercadoria)
 );
@@ -132,10 +129,19 @@ CREATE TABLE Cargo(
 ```SQL
 ALTER TABLE NotasVenda
 ADD
-	CONSTRAINT cpf_vendedor
+	CONSTRAINT cpfVendedorLigadoAoFuncionario
 	FOREIGN
 		KEY(CPFVendedor)
 		REFERENCES Funcionario(CPF);
+```
+
+````SQL
+ALTER TABLE ItensNota
+ADD
+	CONSTRAINT ItemVendidoLigadoNotaVenda
+	FOREIGN
+		KEY(Numero)
+		REFERENCES NotasVenda(Numero)
 ```
 
 # 1
@@ -219,6 +225,14 @@ $$ LANGUAGE PLPGSQL;
 
 # 3
 
+Cade Mercadoria tem um mínimo
+
+````SQL
+ALTER TABLE Mercadorias
+ADD COLUMN
+	QuantidadeMin		INTEGER;
+```
+
 Placeholder.
 
 ```SQL
@@ -239,7 +253,7 @@ AFTER
 	UPDATE
 	ON Mercadorias
 	FOR EACH ROW
-	WHEN (NEW.QuantidadeEstoque <= 3)
+	WHEN (NEW.QuantidadeEstoque <= OLD.QuantidadeMin)
 EXECUTE PROCEDURE EnviarNotificacaoPorEmail();
 ```
 
@@ -312,21 +326,6 @@ EXECUTE PROCEDURE PrecoAbaixoDoPermitido();
 
 # 5
 
-````SQL
-ALTER TABLE Mercadorias
-ADD COLUMN
-	QuantidadeMin		INTEGER;
-```
-
-````SQL
-ALTER TABLE Mercadorias
-ADD COLUMN
-	QuantidadeMax		INTEGER;
-```
-
-----
-
-
 Foi criada uma constraint para impedir que valores sejam menores que 0.  
 
 ```SQL
@@ -351,6 +350,16 @@ END;
 ```
 
 # 6
+
+Precisamos definir o máximo daquela mercadoria
+
+````SQL
+ALTER TABLE Mercadorias
+ADD COLUMN
+	QuantidadeMax		INTEGER;
+```
+
+---
 
 Eu não queria ter que alterear as tabelas originais mas nesse caso eu precisava saber a quantidade máxima que um estoque conseguia armazenar.   
 
