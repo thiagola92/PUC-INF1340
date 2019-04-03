@@ -281,6 +281,27 @@ END;
 $$ LANGUAGE PLPGSQL;
 ```
 
+```SQL
+CREATE FUNCTION PrecoAbaixoDoPermitido() 
+RETURNS TRIGGER
+AS $$
+	BEGIN
+	RAISE EXCEPTION 'Preco abaixo do permitido';
+	RETURN NULL;
+	END;
+$$ LANGUAGE PLPGSQL;
+```
+
+```SQL
+CREATE TRIGGER PrecoDeVendaMenorQueMin
+BEFORE
+	INSERT
+	ON ProdutosComprados
+	FOR EACH ROW
+	WHEN (NEW.ValorUnitario < PrecoDeVendaMin(NEW.NumeroMercadoria))
+EXECUTE PROCEDURE PrecoAbaixoDoPermitido();
+```
+
 # 5
 
 Foi criada uma constraint para impedir que valores sejam menores que 0.  
