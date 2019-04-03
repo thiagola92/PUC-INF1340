@@ -124,6 +124,16 @@ CREATE TABLE Cargo(
 );
 ```
 
+## Alteraçõoes nas bases de dados anteriores
+
+```SQL
+ALTER TABLE NotasVenda
+ADD CONSTRAINT cpf_vendedor
+	FOREIGN
+		KEY(CPFVendedor)
+		REFERENCES Funcionario(CPF);
+```
+
 # 1
 
 ## Base de dados do sistema de compras
