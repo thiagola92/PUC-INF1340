@@ -36,9 +36,8 @@ CREATE TABLE ItensNota(
 );
 ```
 
-Foi adicionado:  
-* QuantidadeMin           INTEGER,  
-* QuantidadeMax           INTEGER,  
+Foi adicionado QuantidadeMin INTEGER  
+Foi adicionado QuantidadeMax INTEGER  
 
 ```SQL
 CREATE TABLE Mercadorias(
