@@ -441,3 +441,20 @@ $$ LANGUAGE PLPGSQL;
 ```
 
 ## Consulta a dados de um pedido X
+
+Toda compra feita pela empresa é armazenada na NotaFiscalCompra, então seus pedidos estão lá.  
+
+```SQL
+CREATE FUNCTION ConsultaDadosDePedido(codigoPedido INTEGER) RETURNS REFCURSOR
+AS $$
+	DECLARE
+		cursorTabela REFCURSOR;
+	BEGIN
+		OPEN cursorTabela FOR
+		SELECT *
+			FROM NotaFiscalCompra
+			WHERE (Numero = codigoPedido);
+		RETURN cursorTabela;
+	END;
+$$ LANGUAGE PLPGSQL;
+```
