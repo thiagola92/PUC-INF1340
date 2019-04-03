@@ -253,13 +253,29 @@ CREATE VIEW DataQueProdutoFoiComprado AS
 ```
 
 ```SQL
-CREATE FUNCTION PrecoDeVendaMin(codigo INTEGER) RETURNS NUMERIC AS $$
+CREATE FUNCTION PrecoDeVendaMin(codigoProduto INTEGER) RETURNS NUMERIC AS $$
 DECLARE
-	valorMin	NUMERIC;
+	dataDaUltimaVenda		DATE;
+	codigoDaUltimaVenda		INTEGER;
+	valorDaUltimaVenda		NUMERIC;
+	
 BEGIN
 	SELECT MAX(DataCompra)
-		INTO valorMin
-		FROM NotaFiscalCompra;
+	INTO dataDaUltimaVenda
+	FROM DataQueProdutoFoiComprado
+	WHERE codigoProduto = NumeroMercadoria;
+		
+	SELECT Numero
+	INTO codigoDaUltimaVenda
+	FROM NotaFiscalCompra
+	WHERE dataDaUltimaVenda = DataCompra;
+	
+	SELECT ValorUnitario
+	INTO valorDaUltimaVenda
+	FROM ProdutosComprados
+	WHERE (codigoDaUltimaVenda = Numero
+		  AND codigoProduto = NumeroMercadoria);
+		
 	RETURN valorMin;
 END;
 $$ LANGUAGE PLPGSQL;
