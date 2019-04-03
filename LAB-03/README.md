@@ -336,7 +336,7 @@ ALTER TABLE Mercadorias
 
 Precisamos definir o máximo daquela mercadoria
 
-````SQL
+```SQL
 ALTER TABLE Mercadorias
 ADD COLUMN
 	QuantidadeMax		INTEGER;
