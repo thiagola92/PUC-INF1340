@@ -512,7 +512,8 @@ $$ LANGUAGE PLPGSQL;
 ## Consulta a estoque e preço de um produto
 
 ```SQL
-CREATE FUNCTION ConsultaEstoquePreco(CodigoProduto INTEGER, OUT ProdutoEstoque INTEGER, OUT ProdutoValor INTEGER)
+CREATE FUNCTION ConsultaEstoquePreco(CodigoProduto INTEGER,
+					OUT ProdutoEstoque INTEGER, OUT ProdutoValor INTEGER)
 AS $$
 	BEGIN
 		SELECT QuantidadeEstoque
