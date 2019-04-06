@@ -1,3 +1,6 @@
+Luis Claudio Cantanhêde Martins - 1512946
+Thiago Lages de Alencar - 1721629
+
 # Tabelas
 
 ## Bases de dados do sistema de vendas
@@ -391,7 +394,7 @@ Armazenar na tabela de Funcionario o salário base e comissao.
 ```SQL
 ALTER TABLE Funcionario
 ADD COLUMN
-	SalarioBase		NUMERIC;
+	Salario		NUMERIC;
 ```
 
 ```SQL
@@ -406,9 +409,12 @@ Um gatilho que sempre que inserir em NotasVenda, calcula a comissão do funciona
 CREATE FUNCTION AtualizarComissao() RETURNS TRIGGER
 AS $$
 DECLARE
-	valorTotal		NUMERIC;
-	comissaoAtual	NUMERIC;
+	valorTotal			NUMERIC;
+	comissaoAtual	        	NUMERIC;
+	salarioB			NUMERIC;
+	codigoCargoDoFuncionario	INTEGER;
 BEGIN
+	-- Atualizar a comissao depois dessa venda
 	SELECT Total
 	INTO valorTotal
 	FROM ValorTotalDaCompra
@@ -421,6 +427,21 @@ BEGIN
 	
 	UPDATE Funcionario
 	SET Comissao = (comissaoAtual + valorTotal * 5/100)
+	WHERE NEW.CPFVendedor = CPF;
+	
+	-- Atualizar o salario total
+	SELECT codigoCargo
+	INTO codigoCargoDoFuncionario
+	FROM CargosFunc
+	WHERE NEW.CPFVendedor = CPF;
+	
+	SELECT SalarioBase
+	INTO salarioB
+	FROM Cargo
+	WHERE Codigo = codigoCargoDoFuncionario;
+	
+	UPDATE Funcionario
+	SET Salario = SalarioB + Comissao
 	WHERE NEW.CPFVendedor = CPF;
 END;
 $$ LANGUAGE PLPGSQL;
@@ -547,3 +568,43 @@ AS $$
 	END;
 $$ LANGUAGE PLPGSQL;
 ```
+
+# Utilizado nesse trabalho
+
+## Tabelas
+NotasVenda(Numero, DataEmissao, FormaPagamento, CodigoCliente, CPFVendedor)  
+ItensNota(Numero, NumeroMercadoria, Quantidade, ValorUnitario)  
+Mercadorias(NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QuantidadeMax)  
+Cliente(Codigo, Nome, Telefone, Logradouro, Numero, Complemento, Cidade, Estado, NumeroContriibuinte)  
+
+Funcionario(CPF, Nome, Telefone, Numero, Complemento, Cidade, Estado, CodigoDepartamento, SalarioBase, Comissao)  
+CargosFunc(CPF, CodigoCargo, DataInicio, DataFim)  
+Departamento(CodigoDepartamento, Nome, CPFChefe)  
+Cargo(Codigo, Descricao, SalarioBase)  
+
+NotaFiscalCompra(Numero, DataCompra, CodigoFornecedor)  
+ProdutosComprados(Numero, NumeroMercadoria, Quantidade, ValorUnitario, ValorTotal)  
+
+## Views
+Fornecedor(Codigo, Nome, Telefone, Logradouro, Numero, Complemento, Cidade, Estado, NumeroContriibuinte)  
+DataQueProdutoFoiComprado(NumeroMercadoria, DataCompra)  
+ValorTotalDaCompra(Numero, Total)  
+ValorTotalDeTodasComprasDeUmCliente(CodigoCliente, Total)  
+
+## Functions
+VendidodParaEmpresa(codigo)  
+CompradoDaEmpresa(codigo)  
+PrecoDeVendaMin(codigoProduto)  
+ConsultaMioresCLientes(Quantidade)  
+COnsultaCliente(CodigoCliente)  
+ConsultaEstoquePreco(CodigoProduto, OUT ProdutoEstoque, OUT ProdutoValor)  
+ConsultaDadosDePedido(codigoPedido)  
+
+## Procedures
+CadastroDeProduto(NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QUantidadeMax)  
+
+## Triggers
+ProdutoQuantidadeAbaixoDoMinimo => EnviarNotificacaoPorEmail()  
+PrecoDeVendaMenorQueMin => PrecoAbaixoDoPermitido()  
+QuantidadeDeProdutosAcimaDoMax => QuantidadeAcimaDoPermitido()  
+AdicionarComissao => AtualizarComissao()  
