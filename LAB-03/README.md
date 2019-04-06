@@ -85,7 +85,7 @@ CREATE TABLE Funcionario(
     Cidade              VARCHAR(255),
     Estado              VARCHAR(2),
     CodigoDepartamento  INTEGER,
-    SalarioBase         NUMERIC,	-- NEW
+    Salario             NUMERIC,	-- NEW
     Comissao            NUMERIC,	-- NEW
     
     PRIMARY
