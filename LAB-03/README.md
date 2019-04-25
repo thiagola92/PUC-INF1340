@@ -460,6 +460,22 @@ EXECUTE PROCEDURE AtualizarComissao();
 ## Cadastro de produtos com todas as suas informações
 
 ```SQL
+CREATE FUNCTION CadastroDeProduto(NumeroMercadoria INTEGER, Descricao VARCHAR,
+				QuantidadeEstoque INTEGER, QuantidadeMin INTEGER,
+				QuantidadeMax INTEGER)
+RETURNS void
+AS $$
+BEGIN
+	INSERT
+	INTO Mercadorias(NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QuantidadeMax)
+	VALUES (NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QuantidadeMax);
+END;
+$$ LANGUAGE PLPGSQL;
+```
+
+Postgresql 11
+
+```SQL
 CREATE PROCEDURE CadastroDeProduto(NumeroMercadoria INTEGER, Descricao VARCHAR,
 				QuantidadeEstoque INTEGER, QuantidadeMin INTEGER,
 				QuantidadeMax INTEGER)
