@@ -616,7 +616,7 @@ COnsultaCliente(CodigoCliente)
 ConsultaEstoquePreco(CodigoProduto, OUT ProdutoEstoque, OUT ProdutoValor)  
 ConsultaDadosDePedido(codigoPedido)  
 
-## Procedures
+## Procedures/Function
 CadastroDeProduto(NumeroMercadoria, Descricao, QuantidadeEstoque, QuantidadeMin, QUantidadeMax)  
 
 ## Triggers
