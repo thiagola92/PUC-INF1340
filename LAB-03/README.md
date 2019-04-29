@@ -307,7 +307,7 @@ BEGIN
 	WHERE (codigoDaUltimaVenda = Numero
 		  AND codigoProduto = NumeroMercadoria);
 		
-	RETURN valorMin;
+	RETURN valorDaUltimaVenda;
 END;
 $$ LANGUAGE PLPGSQL;
 ```
@@ -443,6 +443,8 @@ BEGIN
 	UPDATE Funcionario
 	SET Salario = SalarioB + Comissao
 	WHERE NEW.CPFVendedor = CPF;
+	
+	RETURN NULL;
 END;
 $$ LANGUAGE PLPGSQL;
 	
