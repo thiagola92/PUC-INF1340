@@ -1,44 +1,62 @@
-### SGBD Centralizado
-Todo o banco de dados está centralizado em um local.  
-Vamos supor que temos os seguintes sites  
-Site de São Paulo  
-Site do Rio de Janeiro  
-Site da Bahia  
-...  
-O banco de dados se localiza em Rio de Janeiro, ou seja, todos os outros sites tem que buscar informação no banco de dados do Rio de Janeiro.  
+# Revisão do Teste
 
-Os sites precisam estar preparados para caso não consigam se comunicar com o site do Rio de Janeiro. Por exemplo, se a rede cair os outros sites tem que estar preparados para lidar com essa situação.  
+## 1
+O que faz cada um dos items:  
 
-### SGBD Distribuido
-Existe mais que um banco de dados, distribuido de diversas maneiras.  
-Seguindo o princípio da localidade, você deixa os dados perto do local onde eles são mais usados.  
+* Otimizador  
+    * Parse
+        * Análise léxica
+        * Análise sintática
+        * Válida o nome
+        * Válida semantica
+    * Plano de execução  
+* Processador de consultas
+    * Executa a consulta
+    * Pega os dados da base
+* Gerente de concorrência
+    * Trata da consistência
+    * Trata da independência
+* Gerente de transação
+    * Garantir a automocidade
+        * Não vai deixar que transações diferentes sejam executadas ao mesmo tempo
+* Gerente de recuperação
+    * Dar rollback em caso de problema na transação
 
-Site de São Paulo teria o banco de dados com os dados dos funcionário de São paulo  
-Site do Rio de Janeiro teria o banco de dados com os dados dos funcionário do Rio de Janeiro    
+## 2
+Que informações são acessadas pelo otimizador de consulta?
 
-Para obter os dados de todos funcionários, você precisa pegar a informação de todos os bancos de dados.  
+* Se tem índice  
+* Qual a organização do tabela
+    * Sequencial
+    * Indexado
+    * Acesso direto
 
-Nem todos precisam ter banco de dados próprio.  
+## 3
+Quando que sequêncial desordenado é melhor que sequêncial indexado?  
 
-### SGBD Cliente/Servidor
-O servidor armazena o banco de dados e os clientes fazem request de informações para o servidor.  
+* Quando insere dados novos?
 
-Camada Cliente  
-Camada Servidor  
+## 4
+Para que serve o catálogo?
 
-### SGBD 3 Camadas
-Agora existe mais uma camada, a camada que lida com as requisições do cliente.  
-Tira o trabalho do banco de dados de lidar com o cliente.  
+* Armazenar metadados sobre os dados armazenados
+    * Quantas tuplas tem na tabela
+    * Tabela é pequena ou grande
+    * Cabe em memória ou não
+    * O atributo X tem quantas Y possibilidade
 
-Camada Cliente (navegador)  
-Camada Aplicação (exemplo: apache)  
-Camada Banco de Dados (banco de dados)    
+# Extra
+Flashback
 
-### Modelagem Conceitual
-Modelo Entidade Relacionamento (MER) ou Diagrama de Classes ...  
+* Arquivo sequêncial não ordenado
+    * Heap
+* Arquivo sequêncial ordenado
+    * Sorted
+* Arquivo acesso direto
+    * Hash
+        * É apenas acesso direto quando cada chave leva apenas a um valor
+        * Quando quase não tem colisão
+        * 90% dos valores sem colisão seria o ideal
+* Arquivo sequêncial indexado
+    * Árvore B/B+
 
-### Modelagem Lógica
-Quando você aplica tecnologia no modelo conecitual, você obtem o modelo lógico.  
-
-### Modelagem Física
-Quando você representa tudo no banco de dados, obtemos modelo físico.  

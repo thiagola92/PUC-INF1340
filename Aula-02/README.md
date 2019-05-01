@@ -1,84 +1,271 @@
-# Arquitetura SGBD
+![CPU, Mem, I/O, DB](cpumemiodb.jpg)
 
-Uma consulta SQL passa por vários módulos do sistema antes de ser interpretada pelos bancos de dados.  
+# Armazenamento em Disco
+Banco de dados só faz sentido se tiver muitos dados, ou seja, precisamos de muito espaço e atualmente disco é a única maneira de armazenar muitos dados.  
 
-* **SQL**: A consulta SQL enviado pelo usuário.  
-* **Otimizador**: Otimiza a consulta para que acesse os dados do banco de dados com mais desempenho.  
-* **Processador de Consultas**: É o responsável por enviar a consulta e obter a o resultado.  
-* **Controlador de Concorrência**: Se duas pessoas querem usar o mesmo dado, ele vai proveder as propriedades ACID de banco de dados.   
-* **Controlador de Transação e Recuperação**: Controla para transições bloquiarem os dados que estão utilizando e para que possam ser desfeitas ou confirmadas.  
+Quando você compra um disco você tem que inicializar o disco, na incialização do disco ele cria essas marcações de trilha e setor, isso é gravado fisicamente no disco.  
+Por isso o disco não tem exatamente o tamanho que você comprou, pois parte dele é usada para salvar essas informações.  
 
-![arquitetura](arquitetura.jpg)  
-
-### Otimizador
-Verifica se a formação da consulta está correta.  
-Verifica se a tabela e coluna existem na meta-base.  
-Modifica a consulta para melhorar desempenho (melhor tempo e consumo de recurso).  
-
-SGBDs conseguem otimizar pois eles tem acesso a meta-dados, ou seja, informação sobre as tabelas. Então o SGBD sabe:  
-* Quanto é o tamanho de cada tabela  
-* Quantos registros tem cada tabela  
-* Se a tabela tem indice ou não  
-* Qual a estrutura do arquivo da tabela
-* Se é de acesso direto ou indexada  
+No disco tem uma trilha que diz onde está o catálogo do disco. Normalmente é no meio do disco que fica o catálogo.  
+O meio do disco é onde a informação é percorrida mais rápida.  
+No catálogo tem todas as informações importantes para o disco  
+* Data de criação  
+* Data de ultima atualização  
+* Quem é o dono do arquivo  
+* Organização do arquivo (como você acessa esse arquivo)  
 * ...  
 
-O resultado é **plano de acesso** que mostra como a consulta deve ser processada para o melhor desempenho.  
+![Disco](disco.jpg)  
 
-**Nota**: Compiladores C costumam otimizar e alterar seu código antes de transformar em assembly. Se seu código tem `int x = 1 + 2`, muito provável que seu compilador irá alterar o código para `int x = 3` pois é menos custoso do que fazer a operação de soma. Compiladores otimizam bem mais que esse exemplo simples.  
+### Hierarquia de Memória
 
-### Processador de Consultas  
-Utilizando o plano de acesso obtido anteriormente o processador obtem a tabela com a resposta à consulta.
+* HD
+* Memória dinámica DRAM
+* Memória estática RAM (Cache)
+* Registradores (CPU)
 
-### Controlador de Concorrência
-Controla para que os usuários consigam acessar aos dados em concorrência porém com a aparência de que estão executando isoladamente, ou seja, que o usuário ainda possui todo o banco disponível para acessar sem problema.  
+**Espaço**:  
+HD > Memória > Cache > CPU  
 
-### Controlador de Transação e Recuperação
-Durante uma transação os dados utilizados são bloqueados para a segurança das operações. Ao final da transação você deve confirmar as mudanças ou nega-las.  
+**Velocidade**:  
+CPU > Cache > Memória > HD  
 
-Se confirma com o comando `COMMIT`  
-Se desfaz com o comando `ROLLBACK`  
+RAM/DRAM/CPU são memórias voláteis, se acabar energia, os dados são perdidos.  
 
-#### Transação
-Bloquea dados para uso próprio e outros usuários ficam a espera para aquele dado ser liberado. É necessário um cuidado com a quantidade de dados que você bloquea e o quanto popular eles são, pois você não quer deixar muitas pessoas esperando o acesso a esses dados.  
+#### Memória dinámica vs Cache
+Cache utiliza memória estática (Flip-Flop). Uma vez que você altera um bit para 1, ele continua como 1 até que você altere de novo.  
 
-É possível bloquear acesso a quantos dados você quiser:  
-* Bloquear acesso ao banco de dados inteiro  
-* Bloquear acesso a uma ou mais tabelas  
-* Bloquear acesso a uma ou mais tuplas    
+Memória dinámica precisa que você atualize aquele bit de tempo em tempo se não é alterado. Você precisa ficar sustentando esse valor, se não é perdido.  
 
-#### Recuperação
-Caso algum error tenha ocorrido ou o resultado não seja esperado, você pode desfazer todas as mudanças feitas durante a transação.  
+Por isso cache é utilizada pela CPU, pois seria horrível a CPU tentar acessar um valor enquanto está no ciclo de atualização da memória dinámica.  
 
-# Base de dados
-Existem bases de dados importantes para cada um dos módulos utilizar durante suas etapas.  
+#### HD vs SSD
+Memória flash (SSD) tem aumentado a capacidade mas ainda não é tão confiável quando a memória disco. O SSD tem problema quando você faz muito acessos a uma mesma região, pois desgata muito rápido e depois fica difícil de conseguir acesso a informação.  
 
-* **Otimizador**
-  * Meta-dados e Estatísticas
-* **Processador de Consultas**
-  * Dados e índices
-* **Controlador de concorrência + COntrolador de Transação e Recuperação**
-  * Log de Transações  
+Por enquanto memória flash não substitui o HD.  
 
-![base de dados](base de dados.jpg)
+# Organização de Arquivos
 
-## Gerente de Armazenamento
-É composto pelo gerente de memória e gerente de dados.  
-Gerente de armazenamento cuida de controlar a memória do sistema e garantir um acesso eficiente aos dados, nenhum dos modulos anteriores fala direto com os dados.  
+* Heap (sequencial desordenado)  
+  * Para inserir precisa percorrer até o final e adicionar
+  * Para remover basta alterar ponteiros
+* Sorted (sequencial ordenado)  
+  * Para inserir precisa percorrer até a posição que ele deve ser inserido
+  * Para remover basta alterar ponteiros
+* Hash (acesso direto)  
+  * Para inserir basta utilizar o hash e percorrer o overflow no pior caso
+  * Para remover basta utilizar o hash e percorrer o overflow no pior caso
+* Indexado (sequencial indexado)  
+  * .
+  * .
 
-![gerente de memoria e gerente de dados](memoria e dados.jpg)  
+Sequencial = Ponteiro  
+Acesso Direto = Calcular posição  
 
-# Buffer Pool
-Quando você quer fazer acesso a uma base de dados, você ganha um buffer na memória (buffer pool) para ficar com as páginas que são transferidas do disco para a memória.  
+### Hash colisão
+A implementação que já ouvimos no curso envolve botar no próximo espaço quando ocorre colisão.  
 
-Quando você pede informação para o disco, ele te devolve um grupo de informações, pois esse equipamento é lerdo e não vale a pena usa-lo para devolver pouca informação.  
+Porém uma implementação clássica para resolver esse problema é criar uma área de overflow.  
+Se o que você estiver procurando não estiver na posição que o hash aponta, então grande chance de estar na área de overflow.  
 
-Disco é dividio em blocos/páginas, por isso quando você pede informações ele te devolve um bloco de informações com o tamanho de 2KB/4KB/8KB (normalmente 4KB). Esse grupo de informação é passada do Buffer para o Buffer Pool.  
+![Overflow](overflow.jpg)  
 
-![buffer pool](buffer pool.jpg)  
+### B Tree
+> Todo nó deve ter pelo menos metade da capacidade.  
 
-# Cache
+Essa regra ajuda a impedir um crescimento linear ou desnecessário.  
 
-As memórias cache são apenas caixas de passagem de dados, cada memória cache tem um level (L1/L2/L3) quanto menor mais rápido e quanto mais perto do core melhor.  
+Vamos supor que sempre inserimos em um novo nó  
+Começamos inserindo 5  
 
-![cpu](cpu_old.png)
+| | | | |
+| --- | --- | --- | --- |
+| 5 | | | |
+
+Depois 6    
+
+| | | | |
+| --- | --- | --- | --- |
+| 5 | | | |
+| | 6 | | |
+
+Depois 7  
+
+| | | | |
+| --- | --- | --- | --- |
+| 5 | | | |
+| | 6 | | |
+| | | 7 | |
+
+Aqui você já nota como poderia criar um crescimento linear se formos adicionando sem pensar.  
+Se seguirmos a regra, só poderemos criar um novo nó quando o nó pai estiver cheio  
+Começamos inserindo 5  
+
+| | | |
+| --- | --- | --- |
+| 5 | | | |
+
+Depois 6    
+
+| | | |
+| --- | --- | --- |
+| 5 | 6 | | |
+
+Depois 7  
+
+| | | |
+| --- | --- | --- |
+| 5 | 6 | 7 | |
+
+Depois 8  
+
+| | | | |
+| --- | --- | --- | --- |
+| 5 | 6 | 7 | 8 |
+
+Depois 9   
+
+| | | | | |
+| --- | --- | --- | --- | --- |
+| 5 | 6 | 7 | | |
+| | | | 8 | 9 |
+
+Depois 1   
+
+| | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 5 | 6 | 7 | | |
+| | | | | 8 | 9 |
+
+Depois 2   
+
+| | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- |
+| | | 5 | 6 | 7 | | |
+| 1 | 2 | | | | 8 | 9 |
+
+Um problema que você deve notar é, se a árvore acabou de ser criada... Não temos como seguir essa regra para a raiz. Assim que inserimos a primeira vez, a raiz já começa quebrando a regra.  
+Por isso precisamos da seguinte regra  
+
+> A raiz pode ter no mínimo 2 elementos  
+
+Essa regra nos ajuda a apenas criar a árvore se for necessário (se você tem dois elementos) e permite a raiz a começar a existir no início.  
+
+Agora precisamos cuidar para que a performace da árvore não seja alterada conforme a gente adicione, por exemplo  
+Começamos inserindo 5  
+
+| | | |
+| --- | --- | --- |
+| 5 | | | |
+
+Depois 6    
+
+| | | |
+| --- | --- | --- |
+| 5 | 6 | | |
+
+Depois 7  
+
+| | | |
+| --- | --- | --- |
+| 5 | 6 | 7 | |
+
+Depois 8  
+
+| | | | |
+| --- | --- | --- | --- |
+| 5 | 6 | 7 | 8 |
+
+Depois 9   
+
+| | | | | |
+| --- | --- | --- | --- | --- |
+| 5 | 6 | 7 | | |
+| | | | 8 | 9 |
+
+Depois 10   
+
+| | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| 5 | 6 | 7 | | | |
+| | | | 8 | 9 | 10 |
+
+Depois 11   
+
+| | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- |
+| 5 | 6 | 7 | | | | |
+| | | | 8 | 9 | 10 | 11 |
+
+Depois 12   
+
+| | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 5 | 6 | 7 | | | | | |
+| | | | 8 | 9 | | | |
+| | | | | | 10 | 11 | 12 |
+
+Se continuarmos inserindo assim, vamos ter uma árvore apenas com um galho, crescendo em uma direção.  
+
+> Todas as folhas devem estar no mesmo level  
+
+Isso nos obriga a manter as folhas no mesmo level, com isso o acesso a uma folha ou outra não tem uma diferença anormal.  
+
+> Bottom-up  
+
+Vamos supor que queremos inserir 10, 20, 40, 50  
+Os nós tem espaço para 3  
+
+| | | |
+| --- | --- | --- |
+| 10 | | | |
+
+Inserindo 20
+
+| | | |
+| --- | --- | --- |
+| 10 | 20 | | |
+
+Inserindo 40
+
+| | | |
+| --- | --- | --- |
+| 10 | 20 | 40 | |
+
+Inserindo 50
+
+| | | | |
+| --- | --- | --- |
+| | | 40 | |
+| 10 | 20 | | 50 |
+
+Note que o nó foi criado em cima e ele vai apontar para o novo nó e o nó antigo  
+Vamos continuar inserindo 60, 70, 80  
+
+| | | | | |
+| --- | --- | --- | --- |
+| | | 40 | | |
+| 10 | 20 | | 50 | 60 |
+
+| | | | | | |
+| --- | --- | --- | --- | --- |
+| | | 40 | | | |
+| 10 | 20 | | 50 | 60 | 70 |
+
+| | | | | | |
+| --- | --- | --- | --- | --- |
+| | | 40 | | | |
+| 10 | 20 | | 50 | 60 | 70 |
+
+| | | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| | | 40 | | | 70 | |
+| 10 | 20 | | 50 | 60 | | 80 |
+
+Primeiro nó tem 40 e 70
+Segunda linha tem 3 nós  
+10 e 20  
+50 e 60  
+80    
+
+Mais sobre o assunto: https://www.youtube.com/watch?v=aZjYr87r1b8  
