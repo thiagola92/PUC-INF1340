@@ -1,6 +1,11 @@
 **Luis Claudio Cantanhêde Martins** - 1512946  
 **Thiago Lages de Alencar** - 1721629  
 
+### Todos esses scripts foram implementados no bd******28
+### Todas as consultas do lab3 foram ajustadas para sintaxe do postgresql
+
+
+
 # Tabelas
 
 ## Bases de dados do sistema de vendas
